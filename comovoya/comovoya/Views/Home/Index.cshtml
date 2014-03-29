@@ -1,0 +1,119 @@
+﻿<div class="jumbotron">
+    <h1>Como voy a...</h1>
+    <p class="lead">Informate acerca del medio de transporte que más te convienen para desplazarte en la ciudad</p>
+</div>
+
+
+<div class="content-wrapper">
+    <div class="float-left">
+        <h2>
+            Ingresa la información de tu ruta
+        </h2>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="form-group">
+        <label for="Origen">Localidad de origen</label>
+        <input id="Origen" class="form-control" placeholder="Ingresa la localidad de origen" />
+    </div>
+    <div class="form-group">
+        <label for="Destino">Localidad de destino</label>
+        <input id="Destino" class="form-control" placeholder="Ingresa la localidad de Destino" />
+    </div>
+    <input type="button" id="enviar" value="Consultar" class="btn btn-primary">
+</div>
+
+<div id="results">
+
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () {
+
+            $.ajaxSetup({ cache: false });
+            $('#Origen').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/api/zonas/' + $("#Origen").val(),
+                        type: 'GET',
+                        cache: false,
+                        dataType: 'json',
+                        success: function (json) {
+                            // call autocomplete callback method with results
+                            response($.map(json, function (name) {
+                                return {
+                                    label: name.Nombre,
+                                    value: name.Nombre
+                                }
+                            }));
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log('error', textStatus, errorThrown);
+                        }
+                    });
+                },
+                minLength: 3,
+            });
+
+            $('#Destino').autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/api/zonas/' + $("#Destino").val(),
+                        type: 'GET',
+                        cache: false,
+                        dataType: 'json',
+                        success: function (json) {
+                            // call autocomplete callback method with results
+                            response($.map(json, function (name) {
+                                return {
+                                    label: name.Nombre,
+                                    value: name.Nombre
+                                }
+                            }));
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            console.log('error', textStatus, errorThrown);
+                        }
+                    });
+                },
+                minLength: 3,
+            });
+
+
+            $("#enviar").click(function () {
+                $.ajax({
+                    url: '/api/medio?A=' + $("#Origen").val() + "&B=" + $("#Destino").val(),
+                    type: 'GET',
+                    cache: false,
+                    dataType: 'json',
+                    success: function (json) {
+
+                        $.ajax({
+                            url: '@Url.Action("Route")',
+                            type: 'POST',
+                            cache: false,
+                            contentType: 'application/json',
+                            data: JSON.stringify(json),
+                            dataType: "html",
+                            success: function (data) {
+                                $("#results").empty();
+                                $("#results").html(data);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                console.log('error', textStatus, errorThrown);
+                            }
+                        });
+                    },
+
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('error', textStatus, errorThrown);
+                    }
+                });
+            });
+        });
+    </script>
+}

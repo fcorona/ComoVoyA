@@ -1,0 +1,20 @@
+﻿@model System.Collections.Generic.IEnumerable<comovoya.Models.MedioPuntaje>
+
+
+<div class="content-wrapper">
+    <div class="float-left">
+        <h2>
+            Medios y puntajes
+        </h2>
+    </div>
+</div>
+
+
+
+@foreach (var medio in Model)
+{
+    <div class="form-group">
+        <strong>@medio.Vehiculo:</strong> @medio.Puntaje puntos
+
+    </div>
+}
